@@ -8,7 +8,7 @@ import           Control.Arrow
 
 spec :: Spec
 spec =
-  describe "dec2hex" $
+  describe "Encoder" $ do
     context "given a decimal number" $
       do
         let assert rules =
@@ -18,16 +18,16 @@ spec =
             do
               let rules =
                     map (second Hex)
-                      [ (0, ["0x0"])
-                      , (1, ["0x1"])
-                      , (2, ["0x2"])
-                      , (3, ["0x3"])
-                      , (4, ["0x4"])
-                      , (5, ["0x5"])
-                      , (6, ["0x6"])
-                      , (7, ["0x7"])
-                      , (8, ["0x8"])
-                      , (9, ["0x9"])
+                      [ (0, ['0'])
+                      , (1, ['1'])
+                      , (2, ['2'])
+                      , (3, ['3'])
+                      , (4, ['4'])
+                      , (5, ['5'])
+                      , (6, ['6'])
+                      , (7, ['7'])
+                      , (8, ['8'])
+                      , (9, ['9'])
                       ]
               assert rules
         context "from 10 to 15" $
@@ -35,11 +35,11 @@ spec =
             do
               let rules =
                     map (second Hex)
-                      [ (10, ["0xA"])
-                      , (11, ["0xB"])
-                      , (12, ["0xC"])
-                      , (13, ["0xD"])
-                      , (14, ["0xE"])
-                      , (15, ["0xF"])
-                      ]
+                      [(10, ['A']), (11, ['B']), (12, ['C']), (13, ['D']), (14, ['E']), (15, ['F'])]
               assert rules
+    context "given 16" $
+      it "converts it to 10" $ do
+        show (dec2hex 16) `shouldBe` "0x10"
+    context "given hex bytes [A, F, 8, 2, 2]" $
+      it "shows in reverse order starting with 0x" $
+        show (Hex ['A', 'F', '8', '2', '2']) `shouldBe` "0x282AF"
