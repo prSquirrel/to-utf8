@@ -2,12 +2,10 @@ module EncoderSpec (spec) where
 
 import           Encoder
 import           Test.Hspec
-import           Control.Monad
-import           Control.Applicative
-import           Control.Arrow
+import Test.QuickCheck
 
 spec :: Spec
 spec =
   describe "Encoder" $
     it "should work" $
-      1 + 1 `shouldBe` 2
+      encodeUtf8 0 `shouldBe` '\0'
