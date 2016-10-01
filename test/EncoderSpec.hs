@@ -38,15 +38,29 @@ spec = describe "encodeUtf8" $ do
                     forAll gen11Bits $ \x -> (bitMask . encodeUtf8) x == 0xC080 -- 1100 0000 1000 0000
 
         it "1110 xxxx 10xx xxxx 10xx xxxx for codes [2048, 65535]" $
-            quickCheckWith stdArgs { maxSuccess = 64000 } $
+            quickCheckWith stdArgs { maxSuccess = 10000 } $
                 property $ do
                     let bitMask x = x .&. 0xF0C0C0 -- 1111 0000 1100 0000 1100 0000
                     forAll gen16Bits $
                         \x -> (bitMask . encodeUtf8) x == 0xE08080 -- 1110 0000 1000 0000 1000 0000
 
         it "1111 0xxx 10xx xxxx 10xx xxxx 10xx xxxx for codes [65536, 1114111]" $
-            quickCheckWith stdArgs { maxSuccess = 1050000 } $
+            quickCheckWith stdArgs { maxSuccess = 50000 } $
                 property $ do
                     let bitMask x = x .&. 0xF8C0C0C0 -- 1111 1000 1100 0000 1100 0000 1100 0000
                     forAll gen21Bits $
                         \x -> (bitMask . encodeUtf8) x == 0xF0808080 -- 1111 0000 1000 0000 1000 0000 1000 0000
+
+    describe "integration tests" $ do
+        context "given 288" $
+            it "encodes to C4 A0" $
+                encodeUtf8 288 `shouldBe` 0xC4A0
+        context "given 2336" $
+            it "encodes to E0 A4 A0" $
+                encodeUtf8 2336 `shouldBe` 0xE0A4A0
+        context "given 67102" $
+            it "encodes to F0 90 98 9E" $
+                encodeUtf8 67102 `shouldBe` 0xF090989E
+        context "given 66376" $
+            it "encodes to F0 90 8D 88" $
+                encodeUtf8 66376 `shouldBe` 0xF0908D88
