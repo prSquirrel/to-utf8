@@ -4,7 +4,6 @@ import           Encoder
 import           Test.Hspec
 import           Test.QuickCheck hiding ( (.&.) )
 
-import           Data.Char
 import           Data.Bits
 
 gen7Bits :: Gen Int

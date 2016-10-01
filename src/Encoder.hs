@@ -1,6 +1,5 @@
 module Encoder where
 
-import           Data.Char
 import           Data.Bits
 
 -- Pattern: 110x xxxx 10xx xxxx
