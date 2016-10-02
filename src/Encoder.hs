@@ -1,24 +1,21 @@
 module Encoder where
 
 import           Data.Bits
+import           Data.Word
 
-encodeUtf8 :: Int -> Int
+encodeUtf8 :: Word -> [Word8]
 encodeUtf8 x
-    | x <= 0x7F = x
-    | x <= 0x7FF = 0xC080
-          .|. maskByte1 x
-          .|. maskByte2 x `shiftL` 8
-    | x <= 0xFFFF = 0xE08080
-          .|. maskByte1 x
-          .|. maskByte2 x `shiftL` 8
-          .|. maskByte3 x `shiftL` 16
-    | x <= 0x10FFFF = 0xF0808080
-          .|. maskByte1 x
-          .|. maskByte2 x `shiftL` 8
-          .|. maskByte3 x `shiftL` 16
-          .|. maskByte4 x `shiftL` 24
+    | x <= 0x7F = [ fromIntegral x ]
+    | x <= 0x7FF = applyPattern [ 0xC0, 0x80 ] x
+    | x <= 0xFFFF = applyPattern [ 0xE0, 0x80, 0x80 ] x
+    | x <= 0x10FFFF = applyPattern [ 0xF0, 0x80, 0x80, 0x80 ] x
+
+applyPattern :: [Word8] -> Word -> [Word8]
+applyPattern p x = reverse $
+    zipWith ($) fns (chunkSixBytes x)
   where
-    maskByte1 x = x .&. 0x3F
-    maskByte2 x = maskByte1 $ x `shiftR` 6
-    maskByte3 x = maskByte1 $ x `shiftR` 12
-    maskByte4 x = x `shiftR` 18
+    fns = map (.|.) (reverse p)
+
+chunkSixBytes :: Word -> [Word8]
+chunkSixBytes 0 = [ 0 ]
+chunkSixBytes x = fromIntegral (x .&. 0x3F) : chunkSixBytes (x `shiftR` 6)
